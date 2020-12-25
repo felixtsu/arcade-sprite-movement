@@ -1,4 +1,4 @@
-// Add your code here
+//% advanced=true color=190 weight=100 icon="\u21ac" block="Sprite Movement"
 namespace sprite_movement{
 
     interface MovingSprite {
@@ -12,17 +12,30 @@ namespace sprite_movement{
         return Math.sqrt(Math.pow(sprite.vx, 2) + Math.pow(sprite.vy, 2))
     }
 
+    //%block="make %sprite=variables_get(mySprite) randomly move with velocity %velocity"
+    //%velocity.defl=50
     export function randomlyMoveSprite(sprite:Sprite, velocity:number) {
         sprite.vx = velocity
-        _managingSprites.push({sprite:sprite, velocity:velocity})
-        sprite.onDestroyed(function() {
-            for (let i = 0; i < _managingSprites.length;i++) {
-                if (_managingSprites[i].sprite == sprite) {
-                    _managingSprites.removeAt(i)
-                    break;
-                }
+        let newSprite = true;
+        for (let movingSprite of _managingSprites) {
+            if (sprite == movingSprite.sprite) {
+                movingSprite.velocity = velocity
+                newSprite = false;
+                break
             }
-        })
+        }
+
+        if (newSprite) {
+            _managingSprites.push({sprite:sprite, velocity:velocity})
+            sprite.onDestroyed(function() {
+                for (let i = 0; i < _managingSprites.length;i++) {
+                    if (_managingSprites[i].sprite == sprite) {
+                        _managingSprites.removeAt(i)
+                        break;
+                    }
+                }
+            })
+        }
     } 
 
     function oppositeOf(direction:CollisionDirection) :CollisionDirection{
